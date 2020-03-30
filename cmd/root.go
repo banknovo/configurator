@@ -17,6 +17,7 @@ var (
 	RootCmd = &cobra.Command{
 		Use:   "configurator",
 		Short: "CLI for fetching config values from AWS parameters store",
+		SilenceUsage: true,
 	}
 )
 

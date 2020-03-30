@@ -23,6 +23,6 @@ It assumes that the keys in Parameters Store are defined like the following:
 
 If you're using `mode=blueprint`, an additional parameter is required which is path of blueprint json file:
 ```
-$ ./configurator export -a <app> -e <environment> -t <common-config1> -t <common-config2> -m <mode> -b <path-to-blueprint-json> f json -o <output-file>
+$ ./configurator export -a <app> -e <environment> -t <common-config1> -t <common-config2> -m <mode> -b <path-to-blueprint-json> -f json -o <output-file>
 ```
 If `-o <output-file>` is omitted, it prints to standard output by default.
