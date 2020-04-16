@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/banknovo/configurator/core"
 	"github.com/banknovo/configurator/export"
@@ -16,10 +17,12 @@ import (
 )
 
 var (
-	exportMode    string
-	blueprintFile string
-	exportFormat  string
-	exportOutput  string
+	additionalConfig []string
+	excludePrefix    int
+	exportMode       string
+	blueprintFile    string
+	exportFormat     string
+	exportOutput     string
 
 	exportCmd = &cobra.Command{
 		Use:   "export [flags]",
@@ -29,6 +32,12 @@ var (
 )
 
 func init() {
+	exportCmd.Flags().StringArrayVarP(&additionalConfig, "additional", "t", []string{},
+		"Any additional config values which need to be fetched, accepts comma separated strings")
+
+	exportCmd.Flags().IntVarP(&excludePrefix, "excludePrefix", "p", 1,
+		"The number of prefixes to exclude from the final export. Default is 1.")
+
 	exportCmd.Flags().StringVarP(&exportMode, "mode", "m", "",
 		`Mode of export required
 	flat: Keys are exported as-is in a flat structure
@@ -64,7 +73,10 @@ func runExport(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	allConfigs := getConfigs(env, s)
+	allConfigs, err := getConfigs(env, s)
+	if err != nil {
+		return err
+	}
 	configMap, err := c.Export(allConfigs)
 	if err != nil {
 		return err
@@ -100,24 +112,29 @@ func exportAsJSON(configMap map[string]interface{}, w io.Writer) error {
 }
 
 // getConfig fetches the configs from the store
-func getConfigs(env string, s store.Store) []*core.Config {
+func getConfigs(env string, s store.Store) ([]*core.Config, error) {
 	additionalConfig = append(additionalConfig, app)
 	allConfigs := make([]*core.Config, 0)
 	for _, config := range additionalConfig {
-		key := "/" + env + "/" + config
+		key := fmt.Sprintf("/%s/%s", env, config)
 		fmt.Printf("Fetching config for %s\n", key)
 		configs, err := s.FetchAll(key)
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
-		// cleansing - remove the env prefix from key names
+		// remove prefix from the key name
 		for _, config := range configs {
-			config.Key = config.Key[len(env)+2:]
+			config.Key = removePrefix(config.Key, excludePrefix)
 		}
 		allConfigs = append(allConfigs, configs...)
 	}
-	return allConfigs
+	return allConfigs, nil
+}
+
+func removePrefix(key string, prefixLength int) string {
+	splitAfter := prefixLength + 2
+	idx := prefixLength + 1
+	return strings.SplitAfterN(key, "/", splitAfter)[idx]
 }
 
 // getExporter returns the exporter based on mode

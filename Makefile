@@ -21,7 +21,7 @@ dist/configurator-$(VERSION)-darwin-amd64: | dist/
 	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -mod=mod $(LDFLAGS) -o $@
 
 linux: dist/configurator-$(VERSION)-linux-amd64
-	cp $^ configurator
+	cp $^ dist/configurator
 
 dist/configurator-$(VERSION)-linux-amd64: | dist/
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -mod=mod $(LDFLAGS) -o $@

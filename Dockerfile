@@ -10,6 +10,6 @@ RUN make linux
 FROM scratch AS run
 
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
-COPY --from=build /go/src/github.com/banknovo/configurator/configurator /configurator
+COPY --from=build /go/src/github.com/banknovo/configurator/dist/configurator /configurator
 
 ENTRYPOINT ["/configurator"]

@@ -8,15 +8,14 @@ import (
 )
 
 var (
-	app              string
-	environment      string
-	additionalConfig []string
-	format           string
+	app         string
+	environment string
+	format      string
 
 	// RootCmd is the root cli command
 	RootCmd = &cobra.Command{
-		Use:   "configurator",
-		Short: "CLI for fetching config values from AWS parameters store",
+		Use:          "configurator",
+		Short:        "CLI for fetching config values from AWS parameters store",
 		SilenceUsage: true,
 	}
 )
@@ -27,7 +26,6 @@ func init() {
 		`Environment for which config needs to be fetched
 	development
 	production`)
-	RootCmd.PersistentFlags().StringArrayVarP(&additionalConfig, "additional", "t", []string{}, "Any additional config values which need to be fetched, accepts comma separated strings")
 
 	RootCmd.MarkPersistentFlagRequired("app")
 	RootCmd.MarkPersistentFlagRequired("environment")

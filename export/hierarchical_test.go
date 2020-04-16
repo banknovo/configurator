@@ -48,7 +48,7 @@ func TestHierarchicalExport(t *testing.T) {
 	require.True(t, ok)
 
 	require.Equal(t, "value2", m["Key5"])
-	
+
 	require.Equal(t, int64(1), configMap["Key6"])
 	require.Equal(t, true, configMap["Key7"])
 	require.Equal(t, false, configMap["Key8"])
