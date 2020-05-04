@@ -1,8 +1,8 @@
 VERSION := $(shell git describe --tags --always --dirty="-dev")
-LDFLAGS := -ldflags='-X "main.Version=$(VERSION)"'
+LDFLAGS := -ldflags='-X "main.Version=$(VERSION)" -s -w'
 
 test:
-	go test -v ./...
+	CGO_ENABLED=0 go test -v ./...
 
 all: dist/configurator-$(VERSION)-darwin-amd64 dist/configurator-$(VERSION)-linux-amd64 dist/configurator-$(VERSION)-windows-amd64.exe
 
@@ -12,10 +12,9 @@ clean:
 dist/:
 	mkdir -p dist
 
-build: configurator
-
-configurator:
-	CGO_ENABLED=0 go build -trimpath $(LDFLAGS) -o $@
+build:
+	go fmt ./...
+	CGO_ENABLED=0 go build -trimpath $(LDFLAGS) -o dist/configurator
 
 dist/configurator-$(VERSION)-darwin-amd64: | dist/
 	GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -mod=mod $(LDFLAGS) -o $@

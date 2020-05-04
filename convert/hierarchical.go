@@ -1,21 +1,21 @@
-package export
+package convert
 
 import (
 	"strings"
 
-	"github.com/banknovo/configurator/core"
+	"github.com/banknovo/configurator/config"
 )
 
-// ensure HierarchicalExporter confirms to Exporter interface
-var _ Exporter = &HierarchicalExporter{}
+// ensure HierarchicalConverter confirms to Converter interface
+var _ Converter = &HierarchicalConverter{}
 
-// HierarchicalExporter converts the configs into a hierarchical structure
-type HierarchicalExporter struct {
+// HierarchicalConverter converts the configs into a hierarchical structure
+type HierarchicalConverter struct {
 	Separator string
 }
 
-// Export converts the configs into a nested map of key value pairs
-func (e *HierarchicalExporter) Export(configs []*core.Config) (map[string]interface{}, error) {
+// Convert converts the configs into a nested map of key value pairs
+func (e *HierarchicalConverter) Convert(configs []*config.Config) (map[string]interface{}, error) {
 	configMap := make(map[string]interface{})
 	for _, config := range configs {
 		keys := strings.Split(config.Key, e.Separator)

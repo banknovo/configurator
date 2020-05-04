@@ -1,38 +1,38 @@
-package export
+package convert
 
 import (
 	"testing"
 
-	"github.com/banknovo/configurator/core"
+	"github.com/banknovo/configurator/config"
 	"github.com/stretchr/testify/require"
 )
 
-func TestFlatExport(t *testing.T) {
-	configs := make([]*core.Config, 0)
+func TestFlatConvert(t *testing.T) {
+	configs := make([]*config.Config, 0)
 
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key1",
 		Value: "value1",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key2",
 		Value: "value2",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key3",
 		Value: "1",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key4",
 		Value: "true",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key5",
 		Value: "false",
 	})
 
-	var e Exporter = &FlatExporter{}
-	configMap, err := e.Export(configs)
+	var e Converter = &FlatConverter{}
+	configMap, err := e.Convert(configs)
 
 	require.Empty(t, err, "got error while export")
 	require.Equal(t, "value1", configMap["Key1"])

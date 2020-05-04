@@ -1,16 +1,16 @@
-package export
+package convert
 
 import (
 	"regexp"
 	"strconv"
 
-	"github.com/banknovo/configurator/core"
+	"github.com/banknovo/configurator/config"
 )
 
-// Exporter exports the config values into desired format
-type Exporter interface {
-	// Export exports the array of configs into a map
-	Export(configs []*core.Config) (map[string]interface{}, error)
+// Converter converts the config values into desired format
+type Converter interface {
+	// Convert converts the array of configs into a map
+	Convert(configs []*config.Config) (map[string]interface{}, error)
 }
 
 // getTypedValue attempts to convert rawValue to its data type

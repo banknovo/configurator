@@ -1,40 +1,40 @@
-package export
+package convert
 
 import (
 	"testing"
 
-	"github.com/banknovo/configurator/core"
+	"github.com/banknovo/configurator/config"
 	"github.com/stretchr/testify/require"
 )
 
 func TestHierarchicalExport(t *testing.T) {
-	configs := make([]*core.Config, 0)
+	configs := make([]*config.Config, 0)
 
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key1/Key2/Key3",
 		Value: "value1",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key4/Key5",
 		Value: "value2",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key6",
 		Value: "1",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key7",
 		Value: "true",
 	})
-	configs = append(configs, &core.Config{
+	configs = append(configs, &config.Config{
 		Key:   "Key8",
 		Value: "false",
 	})
 
-	var e Exporter = &HierarchicalExporter{
+	var e Converter = &HierarchicalConverter{
 		Separator: "/",
 	}
-	configMap, err := e.Export(configs)
+	configMap, err := e.Convert(configs)
 
 	require.Empty(t, err, "got error while export")
 

@@ -4,7 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/banknovo/configurator/core"
+	"github.com/banknovo/configurator/config"
 )
 
 // ensure AWSPMStore confirms to Store interface
@@ -32,7 +32,7 @@ func NewAWSPMStore() (*AWSPMStore, error) {
 }
 
 // FetchAll fetches all parameters by path from Parameters Store
-func (s *AWSPMStore) FetchAll(path string) ([]*core.Config, error) {
+func (s *AWSPMStore) FetchAll(path string) ([]*config.Config, error) {
 	awsParams, err := s.getParametersByPath(path)
 	if err != nil {
 		return nil, err
@@ -41,10 +41,10 @@ func (s *AWSPMStore) FetchAll(path string) ([]*core.Config, error) {
 }
 
 // covert the parameters from SSM data type to native
-func convert(awsParams []*ssm.Parameter) []*core.Config {
-	params := make([]*core.Config, len(awsParams))
+func convert(awsParams []*ssm.Parameter) []*config.Config {
+	params := make([]*config.Config, len(awsParams))
 	for i, awsParam := range awsParams {
-		param := &core.Config{
+		param := &config.Config{
 			Key:   *awsParam.Name,
 			Value: *awsParam.Value,
 		}
