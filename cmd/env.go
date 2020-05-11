@@ -23,7 +23,7 @@ func runEnv(*cobra.Command, []string) error {
 	var err error
 
 	if convertMode != "flat" {
-		return fmt.Errorf("only flat oconvert mode is supported with env")
+		return fmt.Errorf("only flat convert mode is supported with env")
 	}
 
 	configMap, err := getConfigs()
