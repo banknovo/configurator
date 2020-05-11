@@ -12,28 +12,40 @@ There are 3 modes of export supported:
 ## Installation
 If you have a functional go environment, you can install with:
 
-```
+```shell script
 $ go get github.com/banknovo/configurator
 ```
 To pull the docker image run:
-```
+```shell script
 $ docker pull banknovo/configurator
 ```
 ## Usage
-Currently, only exporting as JSON is supported.
-
+`configurator` uses AWS SDK to call Parameters Store API. It does not take care of authentication and assumes that relevant credentials are available in the environment where the CLI runs.
+The easiest way is to export the following variables:
+```shell script
+$ export AWS_SECRET_ACCESS_KEY=
+$ export AWS_ACCESS_KEY_ID=
+$ export AWS_DEFAULT_REGION=
 ```
-$ ./configurator export -a <app> -e <environment> [-t <common-config1> -t <common-config2>...] -m <mode> -f json -o <output-file>
-```
-It assumes that the keys in Parameters Store are defined like the following:
-- `/environment/app/...`
-- `/environment/common-config-1/...`
-- `/environment/common-config-2/...`
 
-When exporting, by default, configurator strips off the environment from the key names, but if you do no want this, or want to control the level of nesting in the exported key names, the flag `--prefix | -p` should be used. Its default value is 1.
+### Export
+This command exports the Parameters into a specified format. Currently, only exporting as JSON is supported.
+```shell script
+$ ./configurator export --paths /Path1,/Path2
+```
+The paths are the secrets defined in Parameters Store, and all properties starting with the path name are fetched.
+The parameter `excludePrefix (-x)` is used to remove those number of prefixes from the final export.
+
+For example, if the property is `/Key1/Key2/Key3`, then `excludePrefix=1` will export property names as `Key2/Key3`.
 
 If you're using `mode=blueprint`, an additional parameter is required which is path of blueprint json file:
+```shell script
+$ ./configurator export --paths /Path1,/Path2 -m blueprint -f json -b <path-to-blueprint-json> -o <output-file>
 ```
-$ ./configurator export -a <app> -e <environment> -t <common-config1> -t <common-config2> -m <mode> -b <path-to-blueprint-json> -f json -o <output-file>
+If `-o <output-file>` is omitted, it prints to standard output by default. 
+
+### Env
+This command is used to print the export linux commands on stdout. Because of this, only `flat` mode is supported with `Env`.
+```shell script
+$ ./configurator env --paths /Path1,/Path2
 ```
-If `-o <output-file>` is omitted, it prints to standard output by default.

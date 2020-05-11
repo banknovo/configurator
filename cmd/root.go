@@ -14,11 +14,9 @@ import (
 )
 
 var (
-	app              string
-	environment      string
-	convertMode      string
-	additionalConfig []string
-	excludePrefix    int
+	paths         []string
+	convertMode   string
+	excludePrefix int
 
 	// RootCmd is the root cli command
 	RootCmd = &cobra.Command{
@@ -29,15 +27,8 @@ var (
 )
 
 func init() {
-	RootCmd.PersistentFlags().StringVarP(&app, "app", "a", "", "App for which config need to be fetched")
-
-	RootCmd.PersistentFlags().StringSliceVarP(&additionalConfig, "additional", "t", []string{},
-		"Any additional config values which need to be fetched, accepts comma separated strings")
-
-	RootCmd.PersistentFlags().StringVarP(&environment, "environment", "e", "",
-		`Environment for which config needs to be fetched
-	development
-	production`)
+	RootCmd.PersistentFlags().StringSliceVarP(&paths, "paths", "p", []string{},
+		"Parameter Store path for which values need to be fetched, accepts comma separated strings")
 
 	RootCmd.PersistentFlags().StringVarP(&convertMode, "mode", "m", "flat",
 		`Mode of convert required
@@ -45,11 +36,13 @@ func init() {
 	hierarchical: Keys are exported in a hierarchical structure, keys broken down by separator
 	blueprint: A blueprint file is taken which has keys are values, and real values are replaced in it`)
 
-	RootCmd.PersistentFlags().IntVarP(&excludePrefix, "excludePrefix", "p", 1,
+	RootCmd.PersistentFlags().IntVarP(&excludePrefix, "excludePrefix", "x", 0,
 		"The number of prefixes to exclude from the final export")
 
-	RootCmd.MarkPersistentFlagRequired("app")
-	RootCmd.MarkPersistentFlagRequired("environment")
+	err := RootCmd.MarkPersistentFlagRequired("paths")
+	if err != nil {
+		panic(err)
+	}
 }
 
 // Execute parses command line flags and starts the program
@@ -57,19 +50,6 @@ func Execute() {
 	if err := RootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
-}
-
-func getEnvironment() (string, error) {
-	var env string
-	switch environment {
-	case "development":
-		env = "Dev"
-	case "production":
-		env = "Prod"
-	default:
-		return "", fmt.Errorf("invalid environment `%s`", environment)
-	}
-	return env, nil
 }
 
 // getConverter returns the converter based on mode
@@ -107,11 +87,6 @@ func getConverter(mode string) (convert.Converter, error) {
 
 // getConfig fetches the configs from the store
 func getConfigs() (map[string]interface{}, error) {
-	env, err := getEnvironment()
-	if err != nil {
-		return nil, err
-	}
-
 	c, err := getConverter(convertMode)
 	if err != nil {
 		return nil, err
@@ -122,18 +97,15 @@ func getConfigs() (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	additionalConfig = append(additionalConfig, app)
 	allConfigs := make([]*config.Config, 0)
-
-	for _, config := range additionalConfig {
-		key := fmt.Sprintf("/%s/%s", env, config)
-		configs, err := s.FetchAll(key)
+	for _, path := range paths {
+		configs, err := s.FetchAll(path)
 		if err != nil {
 			return nil, err
 		}
 		// remove prefix from the key name
-		for _, config := range configs {
-			config.Key = removePrefix(config.Key, excludePrefix)
+		for _, c := range configs {
+			c.Key = removePrefix(c.Key, excludePrefix)
 		}
 		allConfigs = append(allConfigs, configs...)
 	}
