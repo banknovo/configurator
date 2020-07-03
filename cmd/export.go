@@ -16,6 +16,7 @@ var (
 	blueprintFile string
 	exportFormat  string
 	exportOutput  string
+	indent        bool
 
 	exportCmd = &cobra.Command{
 		Use:   "export [flags]",
@@ -34,6 +35,8 @@ func init() {
 
 	exportCmd.Flags().StringVarP(&exportOutput, "output-file", "o", "",
 		"Output file (default is standard output)")
+
+	exportCmd.Flags().BoolVarP(&indent, "indent", "i", false, "Produce a indented/pretty export")
 
 	RootCmd.AddCommand(exportCmd)
 }
@@ -75,6 +78,9 @@ func runExport(*cobra.Command, []string) error {
 func exportAsJSON(configMap map[string]interface{}, w io.Writer) error {
 	enc := json.NewEncoder(w)
 	enc.SetEscapeHTML(false)
+	if indent {
+		enc.SetIndent("", "  ")
+	}
 	return enc.Encode(configMap)
 }
 

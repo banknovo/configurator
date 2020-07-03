@@ -2,7 +2,7 @@ VERSION := $(shell git describe --tags --always --dirty="-dev")
 LDFLAGS := -ldflags='-X "main.Version=$(VERSION)" -s -w'
 
 test:
-	CGO_ENABLED=0 go test -v ./...
+	CGO_ENABLED=0 go test ./... -cover
 
 all: dist/configurator-$(VERSION)-darwin-amd64 dist/configurator-$(VERSION)-linux-amd64 dist/configurator-$(VERSION)-windows-amd64.exe
 

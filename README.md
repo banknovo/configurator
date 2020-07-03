@@ -42,7 +42,9 @@ If you're using `mode=blueprint`, an additional parameter is required which is p
 ```shell script
 $ ./configurator export --paths /Path1,/Path2 -m blueprint -f json -b <path-to-blueprint-json> -o <output-file>
 ```
-If `-o <output-file>` is omitted, it prints to standard output by default. 
+If `-o <output-file>` is omitted, it prints to standard output by default.
+
+Parameter `-i` or `--indent` generates indented/pretty output. 
 
 ### Env
 This command is used to print the export linux commands on stdout. Because of this, only `flat` mode is supported with `Env`.
