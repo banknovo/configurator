@@ -10,6 +10,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 )
 
 var (
@@ -31,7 +32,8 @@ func init() {
 
 	exportCmd.Flags().StringVarP(&exportFormat, "format", "f", "json",
 		`Format of the export
-	json`)
+	json
+	yaml`)
 
 	exportCmd.Flags().StringVarP(&exportOutput, "output-file", "o", "",
 		"Output file (default is standard output)")
@@ -64,6 +66,8 @@ func runExport(*cobra.Command, []string) error {
 	switch exportFormat {
 	case "json":
 		err = exportAsJSON(configMap, w)
+	case "yaml":
+		err = exportAsYAML(configMap, w)
 	default:
 		err = fmt.Errorf("unknown export format: %s", exportFormat)
 	}
@@ -81,6 +85,21 @@ func exportAsJSON(configMap map[string]interface{}, w io.Writer) error {
 	if indent {
 		enc.SetIndent("", "  ")
 	}
+	return enc.Encode(configMap)
+}
+
+func exportAsYAML(configMap map[string]interface{}, w io.Writer) (e error) {
+	enc := yaml.NewEncoder(w)
+	defer func() {
+		// if Encode() produces error send that error, else send error produced by Close() (if any)
+		if e != nil {
+			_ = enc.Close()
+		} else {
+			e = enc.Close()
+		}
+	}()
+	// yaml is always intended to 2
+	enc.SetIndent(2)
 	return enc.Encode(configMap)
 }
 

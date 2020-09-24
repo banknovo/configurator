@@ -29,7 +29,7 @@ $ export AWS_DEFAULT_REGION=
 ```
 
 ### Export
-This command exports the Parameters into a specified format. Currently, only exporting as JSON is supported.
+This command exports the Parameters into a specified format. Currently, only exporting as JSON and YAML is supported.
 ```shell script
 $ ./configurator export --paths /Path1,/Path2
 ```
